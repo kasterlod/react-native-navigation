@@ -11,8 +11,8 @@ import android.view.View;
 
 import com.reactnativenavigation.parse.Options;
 import com.reactnativenavigation.parse.SideMenuOptions;
-import com.reactnativenavigation.presentation.Presenter;
-import com.reactnativenavigation.presentation.SideMenuPresenter;
+import com.reactnativenavigation.presentation.OptionsPresenter;
+import com.reactnativenavigation.presentation.SideMenuOptionsPresenter;
 import com.reactnativenavigation.utils.CommandListener;
 import com.reactnativenavigation.viewcontrollers.ChildControllersRegistry;
 import com.reactnativenavigation.viewcontrollers.ParentController;
@@ -29,9 +29,9 @@ public class SideMenuController extends ParentController<DrawerLayout> {
 	private ViewController center;
 	private ViewController left;
 	private ViewController right;
-    private SideMenuPresenter presenter;
+    private SideMenuOptionsPresenter presenter;
 
-    public SideMenuController(Activity activity, ChildControllersRegistry childRegistry, String id, Options initialOptions, SideMenuPresenter sideMenuOptionsPresenter, Presenter presenter) {
+    public SideMenuController(Activity activity, ChildControllersRegistry childRegistry, String id, Options initialOptions, SideMenuOptionsPresenter sideMenuOptionsPresenter, OptionsPresenter presenter) {
 		super(activity, childRegistry, id, presenter, initialOptions);
         this.presenter = sideMenuOptionsPresenter;
     }
@@ -72,7 +72,6 @@ public class SideMenuController extends ParentController<DrawerLayout> {
     @Override
     public void applyChildOptions(Options options, Component child) {
         super.applyChildOptions(options, child);
-        presenter.applyInitialOptions(options.sideMenuRootOptions);
         performOnParentController(parentController ->
                 ((ParentController) parentController).applyChildOptions(this.options, child)
         );

@@ -37,15 +37,22 @@ function start() {
           waitForRender: false,
         }
       },
-      animations: {
+      _animations: {
         setRoot: {
+          y: {
+            from: 1000,
+            to: 0,
+            duration: 500,
+            interpolation: 'accelerate',
+          },
           alpha: {
             from: 0,
             to: 1,
-            duration: 300
+            duration: 500,
+            interpolation: 'accelerate'
           }
         },
-        _push: {
+        push: {
           topBar: {
             id: 'TEST',
             alpha: {
@@ -84,7 +91,7 @@ function start() {
             }
           }
         },
-        _pop: {
+        pop: {
           topBar: {
             id: 'TEST',
             alpha: {

@@ -1,7 +1,5 @@
 package com.reactnativenavigation.parse;
 
-import android.graphics.Color;
-
 import com.reactnativenavigation.parse.params.Colour;
 import com.reactnativenavigation.parse.params.NullColor;
 import com.reactnativenavigation.parse.parsers.ColorParser;
@@ -17,7 +15,7 @@ public class TopBarBackgroundOptions {
         options.component = Component.parse(json.optJSONObject("component"));
 
         if (options.component.hasValue()) {
-            options.color = new Colour(Color.TRANSPARENT);
+            options.color = new Colour(android.graphics.Color.TRANSPARENT);
         }
 
         return options;

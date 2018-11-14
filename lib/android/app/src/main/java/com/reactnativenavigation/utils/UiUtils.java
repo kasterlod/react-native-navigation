@@ -17,7 +17,7 @@ public class UiUtils {
     private static final int DEFAULT_TOOLBAR_HEIGHT = 56;
 
     private static int statusBarHeight = -1;
-    private static int topBarHeight = -1;
+    private static int toolBarHeight = -1;
 
     public static void runOnPreDrawOnce(final View view, final Runnable task) {
         view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -80,32 +80,26 @@ public class UiUtils {
         return statusBarHeight;
     }
 
-    public static int getTopBarHeightDp(Context context) {
-        return (int) UiUtils.pxToDp(context, getTopBarHeight(context));
-    }
-
-    public static int getTopBarHeight(Context context) {
-        if (topBarHeight > 0) {
-            return topBarHeight;
+    public static int getToolBarHeight(Context context) {
+        if (toolBarHeight > 0) {
+            return toolBarHeight;
         }
         final Resources resources = context.getResources();
         final int resourceId = resources.getIdentifier("action_bar_size", "dimen", "android");
-        topBarHeight = resourceId > 0 ?
+        toolBarHeight = resourceId > 0 ?
                 resources.getDimensionPixelSize(resourceId) :
                 dpToPx(context, DEFAULT_TOOLBAR_HEIGHT);
-        return topBarHeight;
+        return toolBarHeight;
     }
 
     public static float dpToPx(Context context, float dp) {
-        Resources resources = context.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        return dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        float scale = context.getResources().getDisplayMetrics().density;
+        return dp * scale + 0.5f;
     }
 
     public static int dpToPx(Context context, int dp) {
-        Resources resources = context.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        return (int) (dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT));
+        float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dp * scale + 0.5f);
     }
 
     public static float pxToDp(Context context, float px) {

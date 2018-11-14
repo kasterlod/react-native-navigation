@@ -3,23 +3,21 @@
 #import <React/RCTConvert.h>
 #import "RCTHelpers.h"
 #import "UIImage+tint.h"
-#import "RNNRootViewController.h"
 
 @interface RNNNavigationButtons()
 
-@property (weak, nonatomic) UIViewController* viewController;
+@property (weak, nonatomic) RNNRootViewController* viewController;
 @property (strong, nonatomic) RNNButtonOptions* defaultLeftButtonStyle;
 @property (strong, nonatomic) RNNButtonOptions* defaultRightButtonStyle;
-@property (nonatomic) id<RNNRootViewCreator> creator;
+
 @end
 
 @implementation RNNNavigationButtons
 
--(instancetype)initWithViewController:(UIViewController*)viewController rootViewCreator:(id<RNNRootViewCreator>)creator {
+-(instancetype)initWithViewController:(RNNRootViewController*)viewController {
 	self = [super init];
 	
 	self.viewController = viewController;
-	self.creator = creator;
 	
 	return self;
 }
@@ -65,22 +63,22 @@
 
 -(RNNUIBarButtonItem*)buildButton: (NSDictionary*)dictionary defaultStyle:(RNNButtonOptions *)defaultStyle {
 	NSString* buttonId = dictionary[@"id"];
-	NSString* title = [self getValue:dictionary[@"text"] withDefault:[defaultStyle.text getWithDefaultValue:nil]];
+	NSString* title = [self getValue:dictionary[@"text"] withDefault:defaultStyle.text];
 	NSDictionary* component = dictionary[@"component"];
 	
 	if (!buttonId) {
 		@throw [NSException exceptionWithName:@"NSInvalidArgumentException" reason:[@"button id is not specified " stringByAppendingString:title] userInfo:nil];
 	}
 	
-	UIImage* defaultIcon = [defaultStyle.icon getWithDefaultValue:nil];
-	UIImage* iconImage = [self getValue:dictionary[@"icon"] withDefault:defaultIcon];
-	if (![iconImage isKindOfClass:[UIImage class]]) {
-		iconImage = [RCTConvert UIImage:iconImage];
+	UIImage* iconImage = nil;
+	id icon = [self getValue:dictionary[@"icon"] withDefault:defaultStyle.icon];
+	if (icon) {
+		iconImage = [RCTConvert UIImage:icon];
 	}
 	
 	RNNUIBarButtonItem *barButtonItem;
 	if (component) {
-		RCTRootView *view = (RCTRootView*)[self.creator createCustomReactView:component[@"name"] rootViewId:component[@"componentId"]];
+		RCTRootView *view = (RCTRootView*)[self.viewController.creator createCustomReactView:component[@"name"] rootViewId:component[@"componentId"]];
 		barButtonItem = [[RNNUIBarButtonItem alloc] init:buttonId withCustomView:view];
 	} else if (iconImage) {
 		barButtonItem = [[RNNUIBarButtonItem alloc] init:buttonId withIcon:iconImage];
@@ -98,15 +96,15 @@
 	barButtonItem.target = self.viewController;
 	barButtonItem.action = @selector(onButtonPress:);
 	
-	NSNumber *enabled = [self getValue:dictionary[@"enabled"] withDefault:defaultStyle.enabled.getValue];
+	NSNumber *enabled = [self getValue:dictionary[@"enabled"] withDefault:defaultStyle.enabled];
 	BOOL enabledBool = enabled ? [enabled boolValue] : YES;
 	[barButtonItem setEnabled:enabledBool];
 	
 	NSMutableDictionary* textAttributes = [[NSMutableDictionary alloc] init];
 	NSMutableDictionary* disabledTextAttributes = [[NSMutableDictionary alloc] init];
 	
-	UIColor* color = [self color:[RCTConvert UIColor:dictionary[@"color"]] defaultColor:[defaultStyle.color getWithDefaultValue:nil]];
-	UIColor* disabledColor = [self color:[RCTConvert UIColor:dictionary[@"disabledColor"]] defaultColor:[defaultStyle.disabledColor getWithDefaultValue:nil]];
+	UIColor* color = [self color:dictionary[@"color"] defaultColor:defaultStyle.color];
+	UIColor* disabledColor = [self color:dictionary[@"disabledColor"] defaultColor:defaultStyle.disabledColor];
 	if (!enabledBool && disabledColor) {
 		color = disabledColor;
 		[disabledTextAttributes setObject:disabledColor forKey:NSForegroundColorAttributeName];
@@ -117,8 +115,8 @@
 		[barButtonItem setImage:[[iconImage withTintColor:color] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
 	}
 	
-	NSNumber* fontSize = [self fontSize:dictionary[@"fontSize"] defaultFontSize:[defaultStyle.fontSize getWithDefaultValue:nil]];
-	NSString* fontFamily = [self fontFamily:dictionary[@"fontFamily"] defaultFontFamily:[defaultStyle.fontFamily getWithDefaultValue:nil]];
+	NSNumber* fontSize = [self fontSize:dictionary[@"fontSize"] defaultFontSize:defaultStyle.fontSize];
+	NSString* fontFamily = [self fontFamily:dictionary[@"fontFamily"] defaultFontFamily:defaultStyle.fontFamily];
 	UIFont *font = nil;
 	if (fontFamily) {
 		font = [UIFont fontWithName:fontFamily size:[fontSize floatValue]];
@@ -141,11 +139,11 @@
 	return barButtonItem;
 }
 
-- (UIColor *)color:(UIColor *)color defaultColor:(UIColor *)defaultColor {
+- (UIColor *)color:(NSNumber *)color defaultColor:(NSNumber *)defaultColor {
 	if (color) {
-		return color;
+		return [RCTConvert UIColor:color];
 	} else if (defaultColor) {
-		return defaultColor;
+		return [RCTConvert UIColor:defaultColor];
 	}
 	
 	return nil;

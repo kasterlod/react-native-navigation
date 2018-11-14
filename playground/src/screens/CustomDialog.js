@@ -18,8 +18,6 @@ class CustomDialog extends PureComponent {
       <View style={styles.root}>
         <Text style={styles.h1} testID={testIDs.DIALOG_HEADER}>Test view</Text>
         <Button title='OK' testID={testIDs.OK_BUTTON} onPress={() => this.onCLickOk()} />
-        <Button title='Set Root' testID={testIDs.SET_ROOT_BUTTON} onPress={() => this.onCLickSetRoot()} />
-        <Button title='Set Intercept touch' testID={testIDs.SET_INTERCEPT_TOUCH} onPress={() => this.onCLickSetInterceptTouch()} />
       </View>
     );
   }
@@ -29,27 +27,8 @@ class CustomDialog extends PureComponent {
       Alert.alert('Overlay disappeared');
     }
   }
-
   onCLickOk() {
     Navigation.dismissOverlay(this.props.componentId);
-  }
-
-  onCLickSetRoot() {
-    Navigation.setRoot({
-      root: {
-        component: {
-          name: 'navigation.playground.TextScreen'
-        }
-      }
-    });
-  }
-
-  onCLickSetInterceptTouch() {
-    Navigation.mergeOptions(this.props.componentId, {
-      overlay: {
-        interceptTouchOutside: false
-      }
-    });
   }
 }
 
@@ -58,7 +37,7 @@ const styles = {
     backgroundColor: 'green',
     justifyContent: 'center',
     alignItems: 'center',
-    height: 140,
+    height: 100,
     bottom: 0,
     position: 'absolute',
     left: 0,

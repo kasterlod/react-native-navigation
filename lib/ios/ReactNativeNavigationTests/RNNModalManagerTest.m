@@ -1,6 +1,5 @@
 #import <XCTest/XCTest.h>
 #import "RNNModalManager.h"
-#import "RNNRootViewController.h"
 
 @interface MockViewController : UIViewController
 

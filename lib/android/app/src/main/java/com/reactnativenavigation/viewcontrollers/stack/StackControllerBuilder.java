@@ -4,8 +4,8 @@ import android.app.Activity;
 
 import com.reactnativenavigation.anim.NavigationAnimator;
 import com.reactnativenavigation.parse.Options;
-import com.reactnativenavigation.presentation.Presenter;
-import com.reactnativenavigation.presentation.StackPresenter;
+import com.reactnativenavigation.presentation.OptionsPresenter;
+import com.reactnativenavigation.presentation.StackOptionsPresenter;
 import com.reactnativenavigation.viewcontrollers.ChildControllersRegistry;
 import com.reactnativenavigation.viewcontrollers.ReactViewCreator;
 import com.reactnativenavigation.viewcontrollers.ViewController;
@@ -26,13 +26,13 @@ public class StackControllerBuilder {
     private Options initialOptions = new Options();
     private NavigationAnimator animator;
     private BackButtonHelper backButtonHelper = new BackButtonHelper();
-    private Presenter presenter;
-    private StackPresenter stackPresenter;
+    private OptionsPresenter presenter;
+    private StackOptionsPresenter stackPresenter;
     private List<ViewController> children = new ArrayList<>();
 
     public StackControllerBuilder(Activity activity) {
         this.activity = activity;
-        presenter = new Presenter(activity, new Options());
+        presenter = new OptionsPresenter(activity, new Options());
         animator = new NavigationAnimator(activity, new ElementTransitionManager());
     }
 
@@ -41,12 +41,12 @@ public class StackControllerBuilder {
         return this;
     }
 
-    public StackControllerBuilder setStackPresenter(StackPresenter stackPresenter) {
+    public StackControllerBuilder setStackPresenter(StackOptionsPresenter stackPresenter) {
         this.stackPresenter = stackPresenter;
         return this;
     }
 
-    public StackControllerBuilder setPresenter(Presenter presenter) {
+    public StackControllerBuilder setPresenter(OptionsPresenter presenter) {
         this.presenter = presenter;
         return this;
     }

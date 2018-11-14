@@ -2,6 +2,7 @@ package com.reactnativenavigation.viewcontrollers.modal;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.ViewGroup;
 
@@ -13,8 +14,7 @@ import com.reactnativenavigation.viewcontrollers.ViewController;
 
 public class ModalPresenter {
 
-    private ViewGroup rootLayout;
-    private ViewGroup modalsLayout;
+    private ViewGroup modalsContainer;
     private ModalAnimator animator;
     private Options defaultOptions = new Options();
 
@@ -22,27 +22,23 @@ public class ModalPresenter {
         this.animator = animator;
     }
 
-    public void setRootLayout(ViewGroup rootLayout) {
-        this.rootLayout = rootLayout;
-    }
-
-    void setModalsLayout(ViewGroup modalsLayout) {
-        this.modalsLayout = modalsLayout;
+    public void setModalsContainer(ViewGroup modalsLayout) {
+        this.modalsContainer = modalsLayout;
     }
 
     public void setDefaultOptions(Options defaultOptions) {
         this.defaultOptions = defaultOptions;
     }
 
-    void showModal(ViewController toAdd, ViewController toRemove, CommandListener listener) {
-        if (modalsLayout == null) {
+    public void showModal(ViewController toAdd, ViewController toRemove, CommandListener listener) {
+        if (modalsContainer == null) {
             listener.onError("Can not show modal before activity is created");
             return;
         }
         Options options = toAdd.resolveCurrentOptions(defaultOptions);
         toAdd.setWaitForRender(options.animations.showModal.waitForRender);
-        modalsLayout.addView(toAdd.getView());
-        if (options.animations.showModal.enabled.isTrueOrUndefined()) {
+        modalsContainer.addView(toAdd.getView());
+        if (options.animations.showModal.enable.isTrueOrUndefined()) {
             if (options.animations.showModal.waitForRender.isTrue()) {
                 toAdd.setOnAppearedListener(() -> animateShow(toAdd, toRemove, listener, options));
             } else {
@@ -73,15 +69,22 @@ public class ModalPresenter {
         listener.onSuccess(toAdd.getId());
     }
 
-    void dismissModal(ViewController toDismiss, @Nullable ViewController toAdd, ViewController root, CommandListener listener) {
-        if (modalsLayout == null) {
+    public void dismissTopModal(ViewController toDismiss, @NonNull ViewController toAdd, CommandListener listener) {
+        if (modalsContainer == null) {
             listener.onError("Can not dismiss modal before activity is created");
             return;
         }
-        if (toAdd != null) toAdd.attachView(toAdd == root ? rootLayout : modalsLayout, 0);
-        Options options = toDismiss.resolveCurrentOptions(defaultOptions);
-        if (options.animations.dismissModal.enabled.isTrueOrUndefined()) {
-            animator.dismiss(toDismiss.getView(), options.animations.dismissModal, new AnimatorListenerAdapter() {
+        toAdd.attachView(modalsContainer, 0);
+        dismissModal(toDismiss, listener);
+    }
+
+    public void dismissModal(ViewController toDismiss, CommandListener listener) {
+        if (modalsContainer == null) {
+            listener.onError("Can not dismiss modal before activity is created");
+            return;
+        }
+        if (toDismiss.options.animations.dismissModal.enable.isTrueOrUndefined()) {
+            animator.dismiss(toDismiss.getView(), toDismiss.options.animations.dismissModal, new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     onDismissEnd(toDismiss, listener);

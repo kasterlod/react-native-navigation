@@ -4,12 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.widget.RelativeLayout;
 
-import com.reactnativenavigation.utils.UiUtils;
 import com.reactnativenavigation.viewcontrollers.topbar.TopBarBackgroundViewController;
 import com.reactnativenavigation.viewcontrollers.topbar.TopBarController;
 import com.reactnativenavigation.views.topbar.TopBar;
-
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 @SuppressLint("ViewConstructor")
 public class StackLayout extends RelativeLayout implements Component {
@@ -23,10 +20,7 @@ public class StackLayout extends RelativeLayout implements Component {
     }
 
     private void createLayout(TopBarBackgroundViewController topBarBackgroundViewController, TopBarController topBarController) {
-        addView(topBarController.createView(getContext(), topBarBackgroundViewController, this),
-                MATCH_PARENT,
-                UiUtils.getTopBarHeight(getContext())
-        );
+        addView(topBarController.createView(getContext(), topBarBackgroundViewController, this));
     }
 
     public String getStackId() {

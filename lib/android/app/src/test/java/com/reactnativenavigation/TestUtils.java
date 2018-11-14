@@ -8,9 +8,8 @@ import com.reactnativenavigation.mocks.TopBarBackgroundViewCreatorMock;
 import com.reactnativenavigation.mocks.TopBarButtonCreatorMock;
 import com.reactnativenavigation.parse.Options;
 import com.reactnativenavigation.parse.params.Bool;
-import com.reactnativenavigation.presentation.StackPresenter;
+import com.reactnativenavigation.presentation.StackOptionsPresenter;
 import com.reactnativenavigation.utils.ImageLoader;
-import com.reactnativenavigation.utils.UiUtils;
 import com.reactnativenavigation.viewcontrollers.ChildControllersRegistry;
 import com.reactnativenavigation.viewcontrollers.ViewController;
 import com.reactnativenavigation.viewcontrollers.stack.StackControllerBuilder;
@@ -30,11 +29,11 @@ public class TestUtils {
                     @Override
                     protected TopBar createTopBar(Context context, TopBarBackgroundViewController topBarBackgroundViewController, StackLayout stackLayout) {
                         TopBar topBar = super.createTopBar(context, topBarBackgroundViewController, stackLayout);
-                        topBar.layout(0, 0, 1000, UiUtils.getTopBarHeight(context));
+                        topBar.layout(0, 0, 1000, 100);
                         return topBar;
                     }
                 })
-                .setStackPresenter(new StackPresenter(activity, new TitleBarReactViewCreatorMock(), new TopBarButtonCreatorMock(), new ImageLoader(), new Options())                )
+                .setStackPresenter(new StackOptionsPresenter(activity, new TitleBarReactViewCreatorMock(), new TopBarButtonCreatorMock(), new ImageLoader(), new Options())                )
                 .setInitialOptions(new Options());
     }
 

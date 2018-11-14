@@ -1,15 +1,11 @@
 #import <UIKit/UIKit.h>
-#import "RNNParentProtocol.h"
-#import "RNNNavigationControllerPresenter.h"
-#import "UINavigationController+RNNOptions.h"
+#import "RNNRootViewProtocol.h"
 
-@interface RNNNavigationController : UINavigationController <RNNParentProtocol>
+@interface RNNNavigationController : UINavigationController <RNNRootViewProtocol>
 
-@property (nonatomic, retain) RNNLayoutInfo* layoutInfo;
-@property (nonatomic, retain) RNNNavigationControllerPresenter* presenter;
+- (instancetype)initWithOptions:(RNNNavigationOptions *)options;
+
+@property (nonatomic, strong) NSString* componentId;
 @property (nonatomic, strong) RNNNavigationOptions* options;
-@property (nonatomic, strong) RNNNavigationOptions* defaultOptions;
-
-- (void)setTopBarBackgroundColor:(UIColor *)backgroundColor;
 
 @end

@@ -1,6 +1,6 @@
 import { Options, OptionsSplitView } from './Options';
 
-export interface LayoutComponent<P = {}> {
+export interface LayoutComponent {
   /**
    * Component reference id, Auto generated if empty
    */
@@ -16,7 +16,7 @@ export interface LayoutComponent<P = {}> {
   /**
    * Properties to pass down to the component
    */
-  passProps?: P;
+  passProps?: object;
 }
 
 export interface LayoutStackChildren {
@@ -118,11 +118,11 @@ export interface LayoutRoot {
   overlays?: any;
 }
 
-export interface Layout<P = {}> {
+export interface Layout {
   /**
    * Set the component
    */
-  component?: LayoutComponent<P>;
+  component?: LayoutComponent;
   /**
    * Set the stack
    */

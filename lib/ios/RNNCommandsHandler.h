@@ -3,13 +3,10 @@
 
 #import "RNNControllerFactory.h"
 #import "RNNStore.h"
-#import "RNNModalManager.h"
-#import "RNNNavigationStackManager.h"
-#import "RNNOverlayManager.h"
 
 @interface RNNCommandsHandler : NSObject
 
-- (instancetype)initWithStore:(RNNStore*)store controllerFactory:(RNNControllerFactory*)controllerFactory eventEmitter:(RNNEventEmitter *)eventEmitter stackManager:(RNNNavigationStackManager *)stackManager modalManager:(RNNModalManager *)modalManager overlayManager:(RNNOverlayManager *)overlayManager;
+- (instancetype)initWithStore:(RNNStore*)store controllerFactory:(RNNControllerFactory*)controllerFactory eventEmitter:(RNNEventEmitter*)eventEmitter;
 
 - (void)setRoot:(NSDictionary*)layout completion:(RNNTransitionCompletionBlock)completion;
 
@@ -29,7 +26,7 @@
 
 - (void)showModal:(NSDictionary*)layout completion:(RNNTransitionWithComponentIdCompletionBlock)completion;
 
-- (void)dismissModal:(NSString*)componentId mergeOptions:(NSDictionary*)options completion:(RNNTransitionCompletionBlock)completion rejection:(RNNTransitionRejectionBlock)reject;
+- (void)dismissModal:(NSString*)componentId mergeOptions:(NSDictionary*)options completion:(RNNTransitionCompletionBlock)completion;
 
 - (void)dismissAllModals:(NSDictionary *)options completion:(RNNTransitionCompletionBlock)completion;
 

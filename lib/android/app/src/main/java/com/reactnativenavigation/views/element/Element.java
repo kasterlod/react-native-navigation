@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.SpannableString;
 import android.text.SpannedString;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -80,6 +81,20 @@ public class Element extends FrameLayout {
         if (spannableText != null) {
             setColor(spannableText, labToColor(color));
             ((TextView) getChild()).setText(spannableText);
+        }
+    }
+
+    @Keep
+    public void setTextSize(float size) {
+        if (spannableText != null) {
+            Log.d("Element", "setTextSize: " + size);
+//            ((ReactTextView) getChild()).setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+
+//            ((ReactTextView) getChild()).updateView();
+//            TextViewUtils.setAbsoluteTextSize(spannableText, size);
+            TextViewUtils.setRelativeTextSize(spannableText, size);
+            ((TextView) getChild()).setText(spannableText);
+//            getChild().invalidate();
         }
     }
 }

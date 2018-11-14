@@ -62,42 +62,9 @@ describe('LayoutTreeCrawler', () => {
     };
 
     const node: any = { type: LayoutType.Component, data: { name: 'theComponentName' } };
-    store.setComponentClassForName('theComponentName', () => MyComponent);
+    store.setOriginalComponentClassForName('theComponentName', MyComponent);
     uut.crawl(node);
     expect(node.data.options).toEqual(theStyle);
-  });
-
-  it('Components: crawl does not cache options', () => {
-    const optionsWithTitle = (title) => {
-      return {
-        topBar: {
-          title: {
-            text: title
-          }
-        }
-      }
-    };
-
-    const MyComponent = class {
-      static options(props) {
-        return {
-          topBar: {
-            title: {
-              text: props.title
-            }
-          }
-        };
-      }
-    };
-
-    const node: any = { type: LayoutType.Component, data: { name: 'theComponentName', passProps: { title: 'title' } } };
-    store.setComponentClassForName('theComponentName', () => MyComponent);
-    uut.crawl(node);
-    expect(node.data.options).toEqual(optionsWithTitle('title'));
-
-    const node2: any = { type: LayoutType.Component, data: { name: 'theComponentName' } };
-    uut.crawl(node2);
-    expect(node2.data.options).toEqual(optionsWithTitle(undefined));
   });
 
   it('Components: passes passProps to the static options function to be used by the user', () => {
@@ -108,7 +75,7 @@ describe('LayoutTreeCrawler', () => {
     };
 
     const node: any = { type: LayoutType.Component, data: { name: 'theComponentName', passProps: { bar: { baz: { value: 'hello' } } } } };
-    store.setComponentClassForName('theComponentName', () => MyComponent);
+    store.setOriginalComponentClassForName('theComponentName', MyComponent);
     uut.crawl(node);
     expect(node.data.options).toEqual({ foo: 'hello' });
   });
@@ -121,7 +88,7 @@ describe('LayoutTreeCrawler', () => {
     };
 
     const node: any = { type: LayoutType.Component, data: { name: 'theComponentName' } };
-    store.setComponentClassForName('theComponentName', () => MyComponent);
+    store.setOriginalComponentClassForName('theComponentName', MyComponent);
     uut.crawl(node);
     expect(node.data.options).toEqual({ foo: {} });
   });
@@ -149,7 +116,7 @@ describe('LayoutTreeCrawler', () => {
     };
 
     const node = { type: LayoutType.Component, data: { name: 'theComponentName', options: passedOptions } };
-    store.setComponentClassForName('theComponentName', () => MyComponent);
+    store.setOriginalComponentClassForName('theComponentName', MyComponent);
 
     uut.crawl(node);
 
@@ -172,7 +139,7 @@ describe('LayoutTreeCrawler', () => {
     };
 
     const node: any = { type: LayoutType.Component, data: { name: 'theComponentName' } };
-    store.setComponentClassForName('theComponentName', () => MyComponent);
+    store.setOriginalComponentClassForName('theComponentName', MyComponent);
     uut.crawl(node);
     expect(node.data.options).not.toBe(theStyle);
   });
@@ -186,21 +153,9 @@ describe('LayoutTreeCrawler', () => {
     const MyComponent = class { };
 
     const node: any = { type: LayoutType.Component, data: { name: 'theComponentName' } };
-    store.setComponentClassForName('theComponentName', () => MyComponent);
+    store.setOriginalComponentClassForName('theComponentName', MyComponent);
     uut.crawl(node);
     expect(node.data.options).toEqual({});
-  });
-
-  it('Components: omits passProps after processing so they are not passed over the bridge', () => {
-    const node = {
-      type: LayoutType.Component,
-      data: {
-        name: 'compName',
-        passProps: {}
-      }
-    };
-    uut.crawl(node);
-    expect(node.data.passProps).toBeUndefined();
   });
 
   describe('navigation options', () => {

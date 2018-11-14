@@ -14,9 +14,9 @@ import com.reactnativenavigation.mocks.SimpleViewController;
 import com.reactnativenavigation.parse.Options;
 import com.reactnativenavigation.parse.params.Bool;
 import com.reactnativenavigation.parse.params.Text;
-import com.reactnativenavigation.presentation.BottomTabPresenter;
-import com.reactnativenavigation.presentation.BottomTabsPresenter;
-import com.reactnativenavigation.presentation.Presenter;
+import com.reactnativenavigation.presentation.BottomTabOptionsPresenter;
+import com.reactnativenavigation.presentation.BottomTabsOptionsPresenter;
+import com.reactnativenavigation.presentation.OptionsPresenter;
 import com.reactnativenavigation.presentation.OverlayManager;
 import com.reactnativenavigation.react.EventEmitter;
 import com.reactnativenavigation.utils.CommandListener;
@@ -35,7 +35,6 @@ import com.reactnativenavigation.viewcontrollers.stack.StackController;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.robolectric.android.controller.ActivityController;
-import org.robolectric.annotation.Config;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,7 +46,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@Config(qualifiers = "xxhdpi")
 public class NavigatorTest extends BaseTest {
     private TestActivity activity;
     private ChildControllersRegistry childRegistry;
@@ -71,7 +69,7 @@ public class NavigatorTest extends BaseTest {
     public void beforeEach() {
         childRegistry = new ChildControllersRegistry();
         eventEmitter = Mockito.mock(EventEmitter.class);
-        overlayManager = spy(new OverlayManager());
+        overlayManager = Mockito.mock(OverlayManager.class);
         imageLoaderMock = ImageLoaderMock.mock();
         activityController = newActivityController(TestActivity.class);
         activity = activityController.create().get();
@@ -109,7 +107,7 @@ public class NavigatorTest extends BaseTest {
     @Test
     public void bindViews() {
         verify(rootPresenter).setRootContainer(uut.getRootLayout());
-        verify(modalStack).setModalsLayout(uut.getModalsLayout());
+        verify(modalStack).setModalsContainer(uut.getModalsLayout());
     }
 
     @Test
@@ -346,25 +344,7 @@ public class NavigatorTest extends BaseTest {
 
     @NonNull
     private BottomTabsController newTabs(List<ViewController> tabs) {
-        return new BottomTabsController(activity, tabs, childRegistry, eventEmitter, imageLoaderMock, "tabsController", new Options(), new Presenter(activity, new Options()), new BottomTabsPresenter(tabs, new Options()), new BottomTabPresenter(activity, tabs, ImageLoaderMock.mock(), new Options()));
-    }
-
-    @Test
-    public void findController_root() {
-        uut.setRoot(child1, new CommandListenerAdapter());
-        assertThat(uut.findController(child1.getId())).isEqualTo(child1);
-    }
-
-    @Test
-    public void findController_overlay() {
-        uut.showOverlay(child1, new CommandListenerAdapter());
-        assertThat(uut.findController(child1.getId())).isEqualTo(child1);
-    }
-
-    @Test
-    public void findController_modal() {
-        uut.showModal(child1, new CommandListenerAdapter());
-        assertThat(uut.findController(child1.getId())).isEqualTo(child1);
+        return new BottomTabsController(activity, tabs, childRegistry, eventEmitter, imageLoaderMock, "tabsController", new Options(), new OptionsPresenter(activity, new Options()), new BottomTabsOptionsPresenter(tabs, new Options()), new BottomTabOptionsPresenter(activity, tabs, new Options()));
     }
 
     @NonNull
@@ -451,8 +431,8 @@ public class NavigatorTest extends BaseTest {
 
     @Test
     public void pushedStackCanBePopped() {
-        child1.options.animations.push.enabled = new Bool(false);
-        child2.options.animations.push.enabled = new Bool(false);
+        child1.options.animations.push.enable = new Bool(false);
+        child2.options.animations.push.enable = new Bool(false);
         StackController spy = spy(parentController);
         StackController parent = newStack();
         parent.ensureViewIsCreated();
@@ -595,7 +575,7 @@ public class NavigatorTest extends BaseTest {
         disablePushAnimation(child1);
 
         StackController spy = spy(parentController);
-        spy.options.animations.setRoot.enabled = new Bool(false);
+        spy.options.animations.setRoot.enable = new Bool(false);
         uut.setRoot(spy, new CommandListenerAdapter());
         spy.push(child1, new CommandListenerAdapter());
         activityController.destroy();
@@ -606,7 +586,7 @@ public class NavigatorTest extends BaseTest {
     public void destroy_destroyOverlayManager() {
         uut.setRoot(parentController, new CommandListenerAdapter());
         activityController.destroy();
-        verify(overlayManager).destroy();
+        verify(overlayManager, times(1)).destroy();
     }
 
     @Test

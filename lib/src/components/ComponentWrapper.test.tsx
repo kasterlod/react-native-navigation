@@ -3,15 +3,12 @@ import { Text } from 'react-native';
 import * as renderer from 'react-test-renderer';
 import { ComponentWrapper } from './ComponentWrapper';
 import { Store } from './Store';
-import { mock, verify, instance } from 'ts-mockito';
-import { ComponentEventsObserver } from '../events/ComponentEventsObserver';
 
 describe('ComponentWrapper', () => {
   const componentName = 'example.MyComponent';
   let store;
   let myComponentProps;
-  let mockedComponentEventsObserver: ComponentEventsObserver;
-  let componentEventsObserver: ComponentEventsObserver;
+  const componentEventsObserver = { unmounted: jest.fn() };
 
   class MyComponent extends React.Component<any, any> {
     static options = {
@@ -48,12 +45,10 @@ describe('ComponentWrapper', () => {
 
   beforeEach(() => {
     store = new Store();
-    mockedComponentEventsObserver = mock(ComponentEventsObserver);
-    componentEventsObserver = instance(mockedComponentEventsObserver);
   });
 
   it('must have componentId as prop', () => {
-    const NavigationComponent = ComponentWrapper.wrap(componentName, () => MyComponent, store, componentEventsObserver);
+    const NavigationComponent = ComponentWrapper.wrap(componentName, MyComponent, store, componentEventsObserver);
     const orig = console.error;
     console.error = (a) => a;
     expect(() => {
@@ -63,7 +58,7 @@ describe('ComponentWrapper', () => {
   });
 
   it('wraps the component', () => {
-    const NavigationComponent = ComponentWrapper.wrap(componentName, () => MyComponent, store, componentEventsObserver);
+    const NavigationComponent = ComponentWrapper.wrap(componentName, MyComponent, store, componentEventsObserver);
     expect(NavigationComponent).not.toBeInstanceOf(MyComponent);
     const tree = renderer.create(<NavigationComponent componentId={'component1'} />);
     expect(tree.toJSON()!.children).toEqual(['Hello, World!']);
@@ -71,14 +66,14 @@ describe('ComponentWrapper', () => {
 
   it('injects props from wrapper into original component', () => {
     const renderCount = jest.fn();
-    const NavigationComponent = ComponentWrapper.wrap(componentName, () => MyComponent, store, componentEventsObserver);
+    const NavigationComponent = ComponentWrapper.wrap(componentName, MyComponent, store, componentEventsObserver);
     const tree = renderer.create(<NavigationComponent componentId={'component1'} text={'yo'} renderCount={renderCount} />);
     expect(tree.toJSON()!.children).toEqual(['yo']);
     expect(renderCount).toHaveBeenCalledTimes(1);
   });
 
   it('updates props from wrapper into original component on state change', () => {
-    const NavigationComponent = ComponentWrapper.wrap(componentName, () => MyComponent, store, componentEventsObserver);
+    const NavigationComponent = ComponentWrapper.wrap(componentName, MyComponent, store, componentEventsObserver);
     const tree = renderer.create(<TestParent ChildClass={NavigationComponent} />);
     expect(myComponentProps.foo).toEqual(undefined);
     (tree.getInstance() as any).setState({ propsFromState: { foo: 'yo' } });
@@ -87,13 +82,13 @@ describe('ComponentWrapper', () => {
 
   it('pulls props from the store and injects them into the inner component', () => {
     store.setPropsForId('component123', { numberProp: 1, stringProp: 'hello', objectProp: { a: 2 } });
-    const NavigationComponent = ComponentWrapper.wrap(componentName, () => MyComponent, store, componentEventsObserver);
+    const NavigationComponent = ComponentWrapper.wrap(componentName, MyComponent, store, componentEventsObserver);
     renderer.create(<NavigationComponent componentId={'component123'} />);
     expect(myComponentProps).toEqual({ componentId: 'component123', numberProp: 1, stringProp: 'hello', objectProp: { a: 2 } });
   });
 
   it('updates props from store into inner component', () => {
-    const NavigationComponent = ComponentWrapper.wrap(componentName, () => MyComponent, store, componentEventsObserver);
+    const NavigationComponent = ComponentWrapper.wrap(componentName, MyComponent, store, componentEventsObserver);
     const tree = renderer.create(<TestParent ChildClass={NavigationComponent} />);
     store.setPropsForId('component1', { myProp: 'hello' });
     expect(myComponentProps.foo).toEqual(undefined);
@@ -104,7 +99,7 @@ describe('ComponentWrapper', () => {
   });
 
   it('protects id from change', () => {
-    const NavigationComponent = ComponentWrapper.wrap(componentName, () => MyComponent, store, componentEventsObserver);
+    const NavigationComponent = ComponentWrapper.wrap(componentName, MyComponent, store, componentEventsObserver);
     const tree = renderer.create(<TestParent ChildClass={NavigationComponent} />);
     expect(myComponentProps.componentId).toEqual('component1');
     (tree.getInstance() as any).setState({ propsFromState: { id: 'ERROR' } });
@@ -112,7 +107,7 @@ describe('ComponentWrapper', () => {
   });
 
   it('assignes key by id', () => {
-    const NavigationComponent = ComponentWrapper.wrap(componentName, () => MyComponent, store, componentEventsObserver);
+    const NavigationComponent = ComponentWrapper.wrap(componentName, MyComponent, store, componentEventsObserver);
     const tree = renderer.create(<NavigationComponent componentId={'component1'} />);
     expect(myComponentProps.componentId).toEqual('component1');
     expect((tree.getInstance() as any)._reactInternalInstance.child.key).toEqual('component1');
@@ -120,24 +115,24 @@ describe('ComponentWrapper', () => {
 
   it('cleans props from store on unMount', () => {
     store.setPropsForId('component123', { foo: 'bar' });
-    const NavigationComponent = ComponentWrapper.wrap(componentName, () => MyComponent, store, componentEventsObserver);
+    const NavigationComponent = ComponentWrapper.wrap(componentName, MyComponent, store, componentEventsObserver);
     const tree = renderer.create(<NavigationComponent componentId={'component123'} />);
     expect(store.getPropsForId('component123')).toEqual({ foo: 'bar' });
     tree.unmount();
     expect(store.getPropsForId('component123')).toEqual({});
   });
 
-  it(`merges static members from wrapped component when generated`, () => {
-    const NavigationComponent = ComponentWrapper.wrap(componentName, () => MyComponent, store, componentEventsObserver) as any;
+  it(`merges static members from wrapped component`, () => {
+    const NavigationComponent = ComponentWrapper.wrap(componentName, MyComponent, store, componentEventsObserver) as any;
     expect(NavigationComponent.options).toEqual({ title: 'MyComponentTitle' });
   });
 
   it(`calls unmounted on componentEventsObserver`, () => {
-    const NavigationComponent = ComponentWrapper.wrap(componentName, () => MyComponent, store, componentEventsObserver);
+    const NavigationComponent = ComponentWrapper.wrap(componentName, MyComponent, store, componentEventsObserver);
     const tree = renderer.create(<NavigationComponent componentId={'component123'} />);
-    verify(mockedComponentEventsObserver.unmounted('component123')).never();
+    expect(componentEventsObserver.unmounted).not.toHaveBeenCalled();
     tree.unmount();
-    verify(mockedComponentEventsObserver.unmounted('component123')).once();
+    expect(componentEventsObserver.unmounted).toHaveBeenCalledTimes(1);
   });
 
   describe(`register with redux store`, () => {
@@ -162,7 +157,7 @@ describe('ComponentWrapper', () => {
     const reduxStore = require('redux').createStore((state = initialState) => state);
 
     it(`wraps the component with a react-redux provider with passed store`, () => {
-      const NavigationComponent = ComponentWrapper.wrap(componentName, () => ConnectedComp, store, componentEventsObserver, ReduxProvider, reduxStore);
+      const NavigationComponent = ComponentWrapper.wrap(componentName, ConnectedComp, store, componentEventsObserver, ReduxProvider, reduxStore);
       const tree = renderer.create(<NavigationComponent componentId={'theCompId'} />);
       expect(tree.toJSON()!.children).toEqual(['it just works']);
       expect((NavigationComponent as any).options).toEqual({ foo: 123 });

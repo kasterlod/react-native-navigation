@@ -1,3 +1,4 @@
+
 #import "RNNStore.h"
 
 @interface RNNStore ()
@@ -46,23 +47,6 @@
 	[_componentStore removeAllObjects];
 }
 
-- (void)removeAllComponentsFromWindow:(UIWindow *)window {
-	for (NSString *key in [self componentsForWindow:window]) {
-		[_componentStore removeObjectForKey:key];
-	}
-}
-
-- (NSArray *)componentsForWindow:(UIWindow *)window {
-	NSMutableArray* keyWindowComponents = [NSMutableArray new];
-	for (NSString* key in _componentStore) {
-		UIViewController *component = [_componentStore objectForKey:key];
-		if (component.view.window == window) {
-			[keyWindowComponents addObject:key];
-		}
-	}
-	
-	return keyWindowComponents;
-}
 
 -(void)setReadyToReceiveCommands:(BOOL)isReady {
 	_isReadyToReceiveCommands = isReady;
@@ -91,9 +75,9 @@
 	[_externalComponentCreators setObject:[callback copy] forKey:name];
 }
 
-- (UIViewController *)getExternalComponent:(RNNLayoutInfo *)layoutInfo bridge:(RCTBridge *)bridge {
-	RNNExternalViewCreator creator = [_externalComponentCreators objectForKey:layoutInfo.name];
-	return creator(layoutInfo.props, bridge);
+- (UIViewController *)getExternalComponent:(NSString *)name props:(NSDictionary*)props bridge:(RCTBridge *)bridge {
+	RNNExternalViewCreator creator = [_externalComponentCreators objectForKey:name];
+	return creator(props, bridge);
 }
 
 @end

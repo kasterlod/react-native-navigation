@@ -145,9 +145,7 @@ Transparent TopBar. Set `drawBehind: true` to draw the screen behind the transpa
 
 ```js
 topBar: {
-  background: {
-    color: 'transparent'
-  }
+  transparent: true
 }  
 ```
 
@@ -188,7 +186,7 @@ Navigation.mergeOptions(this.props.componentId, {
 On **iOS**, BottomTab visibility can be changed only when pushing screens. This means that if you'd like to hide BottomTabs when pushing a screen, You'll need to set the property to `false` in the options passed to the `push` command or via the `static options(passProps) {}` api.
 
 ## statusBarHidden
-StatusBar visibility. For android, also set `drawBehind: true`.
+StatusBar visibility
 
 ```js
 statusBar: {
@@ -419,9 +417,7 @@ Translucent TopBar, Setting `drawBehind: true` is required for this property to 
 
 ```js
 topBar: {
-  background: {
-    translucent: true
-  }
+  translucent: true
 }
 ```
 
@@ -439,9 +435,7 @@ Blue the area behind the TopBar, Setting `drawBehind: true` is required for this
 
 ```js
 topBar: {
-  background: {
-    blur: true
-  }
+  blur: true
 }  
 ```
 

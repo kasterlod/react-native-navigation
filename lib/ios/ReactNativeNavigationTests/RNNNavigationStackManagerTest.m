@@ -1,12 +1,11 @@
 #import <XCTest/XCTest.h>
 #import "RNNStore.h"
 #import "RNNNavigationStackManager.h"
-#import "RNNRootViewController.h"
-#import "RNNNavigationController.h"
+
 
 @interface RNNNavigationStackManagerTest : XCTestCase
 
-@property (nonatomic, strong) RNNNavigationController *nvc;
+@property (nonatomic, strong) UINavigationController *nvc;
 @property (nonatomic, strong) UIViewController *vc1;
 @property (nonatomic, strong) UIViewController *vc2;
 @property (nonatomic, strong) UIViewController *vc3;
@@ -19,7 +18,7 @@
 - (void)setUp {
     [super setUp];
 	
-	self.nvc = [[RNNNavigationController alloc] init];
+	self.nvc = [[UINavigationController alloc] init];
 	self.vc1 = [RNNRootViewController new];
 	self.vc2 = [RNNRootViewController new];
 	self.vc3 = [RNNRootViewController new];

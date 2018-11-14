@@ -219,9 +219,7 @@ class OptionsScreen extends Component {
   onClickTopBarTransparent = () => {
     Navigation.mergeOptions(this.props.componentId, {
       topBar: {
-        background: {
-          color: 'transparent'
-        }
+        transparent: true
       }
     });
   }
@@ -229,15 +227,13 @@ class OptionsScreen extends Component {
   onClickTopBarOpaque = () => {
     Navigation.mergeOptions(this.props.componentId, {
       topBar: {
-        background: {
-          color: 'white'
-        }
+        transparent: false
       }
     });
   }
 
   onClickShowTopBar = () => {
-    Navigation.mergeOptions('TEST', {
+    Navigation.mergeOptions(this.props.componentId, {
       topBar: {
         visible: true,
         animate: true

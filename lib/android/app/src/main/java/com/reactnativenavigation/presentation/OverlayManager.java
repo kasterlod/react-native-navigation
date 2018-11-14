@@ -37,8 +37,4 @@ public class OverlayManager {
     public int size() {
         return overlayRegistry.size();
     }
-
-    public ViewController findControllerById(String id) {
-        return overlayRegistry.get(id);
-    }
 }

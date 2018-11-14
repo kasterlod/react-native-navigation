@@ -12,8 +12,7 @@ import com.reactnativenavigation.mocks.TestReactView;
 import com.reactnativenavigation.parse.Options;
 import com.reactnativenavigation.parse.params.Bool;
 import com.reactnativenavigation.parse.params.Text;
-import com.reactnativenavigation.presentation.ComponentPresenter;
-import com.reactnativenavigation.presentation.Presenter;
+import com.reactnativenavigation.presentation.OptionsPresenter;
 import com.reactnativenavigation.utils.CommandListenerAdapter;
 import com.reactnativenavigation.utils.ViewHelper;
 import com.reactnativenavigation.viewcontrollers.stack.StackController;
@@ -60,7 +59,7 @@ public class TopTabsViewControllerTest extends BaseTest {
         topTabsLayout = spy(new TopTabsViewPager(activity, tabControllers, new TopTabsAdapter(tabControllers)));
         TopTabsLayoutCreator layoutCreator = Mockito.mock(TopTabsLayoutCreator.class);
         Mockito.when(layoutCreator.create()).thenReturn(topTabsLayout);
-        Presenter presenter = new Presenter(activity, new Options());
+        OptionsPresenter presenter = new OptionsPresenter(activity, new Options());
         options.topBar.buttons.back.visible = new Bool(false);
         uut = spy(new TopTabsController(activity, childRegistry, "componentId", tabControllers, layoutCreator, options, presenter));
         tabControllers.forEach(viewController -> viewController.setParentController(uut));
@@ -91,8 +90,7 @@ public class TopTabsViewControllerTest extends BaseTest {
                     "theComponentName",
                     new TestComponentViewCreator(),
                     tabOptions.get(i),
-                    new Presenter(activity, new Options()),
-                    new ComponentPresenter()
+                    new OptionsPresenter(activity, new Options())
             );
             tabControllers.add(spy(viewController));
         }

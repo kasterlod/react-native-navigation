@@ -230,9 +230,9 @@ describe('Commands', () => {
 
   describe('push', () => {
     it('deep clones input to avoid mutation errors', () => {
-      const options = {};
-      uut.push('theComponentId', { component: { name: 'name', options } });
-      expect(mockCommandsSender.push.mock.calls[0][2].data.options).not.toBe(options);
+      const obj = {};
+      uut.push('theComponentId', { component: { name: 'name', passProps: { foo: obj } } });
+      expect(mockCommandsSender.push.mock.calls[0][2].data.passProps.foo).not.toBe(obj);
     });
 
     it('resolves with the parsed layout', async () => {
@@ -253,15 +253,6 @@ describe('Commands', () => {
         },
         children: []
       });
-    });
-
-    it('calls component generator once', async () => {
-      const generator = jest.fn(() => {
-        return {};
-      });
-      store.setComponentClassForName('theComponentName', generator);
-      await uut.push('theComponentId', { component: { name: 'theComponentName' } });
-      expect(generator).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -391,7 +382,7 @@ describe('Commands', () => {
       const mockParser = { parse: () => 'parsed' };
       const mockCrawler = { crawl: (x) => x, processOptions: (x) => x };
       commandsObserver.register(cb);
-      uut = new Commands(mockCommandsSender, mockParser as any, mockCrawler as any, commandsObserver, new UniqueIdProvider());
+      uut = new Commands(mockCommandsSender, mockParser, mockCrawler, commandsObserver, new UniqueIdProvider());
     });
 
     function getAllMethodsOfUut() {

@@ -16,17 +16,17 @@
 
 ---
 
-## setComponentClassForName
+## setOriginalComponentClassForName
 
-`setComponentClassForName(componentName: string, ComponentClass: any): void`
+`setOriginalComponentClassForName(componentName: string, ComponentClass: any): void`
 
 [source](https://github.com/wix/react-native-navigation/blob/v2/lib/src/components/Store.ts#L15)
 
 ---
 
-## getComponentClassForName
+## getOriginalComponentClassForName
 
-`getComponentClassForName(componentName: string): any`
+`getOriginalComponentClassForName(componentName: string): any`
 
 [source](https://github.com/wix/react-native-navigation/blob/v2/lib/src/components/Store.ts#L19)
 

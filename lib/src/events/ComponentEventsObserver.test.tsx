@@ -5,6 +5,7 @@ import { NativeEventsReceiver } from '../adapters/NativeEventsReceiver.mock';
 
 describe('ComponentEventsObserver', () => {
   const mockEventsReceiver = new NativeEventsReceiver();
+  let uut;
   const didAppearFn = jest.fn();
   const didDisappearFn = jest.fn();
   const didMountFn = jest.fn();
@@ -15,55 +16,8 @@ describe('ComponentEventsObserver', () => {
   const previewCompletedFn = jest.fn();
   const modalDismissedFn = jest.fn();
   let subscription;
-  let uut;
 
   class SimpleScreen extends React.Component<any, any> {
-    render() {
-      return 'Hello';
-    }
-  }
-
-  class UnboundScreen extends React.Component<any, any> {
-    constructor(props) {
-      super(props);
-    }
-
-    componentDidMount() {
-      didMountFn();
-    }
-
-    componentWillUnmount() {
-      willUnmountFn();
-    }
-
-    componentDidAppear() {
-      didAppearFn();
-    }
-
-    componentDidDisappear() {
-      didDisappearFn();
-    }
-
-    navigationButtonPressed(event) {
-      navigationButtonPressedFn(event);
-    }
-
-    modalDismissed(event) {
-      modalDismissedFn(event);
-    }
-
-    searchBarUpdated(event) {
-      searchBarUpdatedFn(event);
-    }
-
-    searchBarCancelPressed(event) {
-      searchBarCancelPressedFn(event);
-    }
-
-    previewCompleted(event) {
-      previewCompletedFn(event);
-    }
-
     render() {
       return 'Hello';
     }
@@ -117,7 +71,6 @@ describe('ComponentEventsObserver', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks();
     uut = new ComponentEventsObserver(mockEventsReceiver);
   });
 
@@ -126,31 +79,6 @@ describe('ComponentEventsObserver', () => {
     expect(() => uut.bindComponent(tree.getInstance() as any)).toThrow('');
     const tree2 = renderer.create(<SimpleScreen componentId={123} />);
     expect(() => uut.bindComponent(tree2.getInstance() as any)).toThrow('');
-  });
-
-  it(`bindComponent accepts an optional componentId`, () => {
-    const tree = renderer.create(<UnboundScreen />);
-    uut.bindComponent(tree.getInstance() as any, 'myCompId')
-
-    expect(tree.toJSON()).toBeDefined();
-    expect(didAppearFn).not.toHaveBeenCalled();
-
-    uut.notifyComponentDidAppear({ componentId: 'myCompId', componentName: 'doesnt matter' });
-    expect(didAppearFn).toHaveBeenCalledTimes(1);
-  });
-
-  it(`bindComponent should use optional componentId if component has a componentId in props`, () => {
-    const tree = renderer.create(<UnboundScreen  componentId={'doNotUseThisId'} />);
-    uut.bindComponent(tree.getInstance() as any, 'myCompId')
-
-    expect(tree.toJSON()).toBeDefined();
-    
-    uut.notifyComponentDidAppear({ componentId: 'dontUseThisId', componentName: 'doesnt matter' });
-    expect(didAppearFn).not.toHaveBeenCalled();
-    
-
-    uut.notifyComponentDidAppear({ componentId: 'myCompId', componentName: 'doesnt matter' });
-    expect(didAppearFn).toHaveBeenCalledTimes(1);
   });
 
   it(`bindComponent notifies listeners by componentId on events`, () => {
@@ -273,5 +201,30 @@ describe('ComponentEventsObserver', () => {
     expect(mockEventsReceiver.registerSearchBarUpdatedListener).toHaveBeenCalledTimes(1);
     expect(mockEventsReceiver.registerSearchBarCancelPressedListener).toHaveBeenCalledTimes(1);
     expect(mockEventsReceiver.registerPreviewCompletedListener).toHaveBeenCalledTimes(1);
+  });
+
+  it(`warn when button event is not getting handled`, () => {
+    const tree1 = renderer.create(<SimpleScreen componentId={'myCompId'} />);
+    const instance1 = tree1.getInstance() as any;
+    console.warn = jest.fn();
+    uut.bindComponent(instance1);
+
+    uut.notifyNavigationButtonPressed({ componentId: 'myCompId', buttonId: 'myButtonId' });
+
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith(`navigationButtonPressed for button 'myButtonId' was not handled`);
+  });
+
+  it(`doesn't warn when button event is getting handled`, () => {
+    const tree1 = renderer.create(<SimpleScreen componentId={'myCompId'} />);
+    const instance1 = tree1.getInstance() as any;
+    console.warn = jest.fn();
+    
+    instance1.navigationButtonPressed = jest.fn();
+    uut.bindComponent(instance1);
+
+    uut.notifyNavigationButtonPressed({ componentId: 'myCompId', buttonId: 'myButtonId' });
+
+    expect(console.warn).toHaveBeenCalledTimes(0);
   });
 });

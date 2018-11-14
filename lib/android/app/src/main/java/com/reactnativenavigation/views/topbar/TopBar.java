@@ -2,7 +2,6 @@ package com.reactnativenavigation.views.topbar;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.support.annotation.ColorInt;
@@ -72,7 +71,7 @@ public class TopBar extends AppBarLayout implements ScrollEventListener.ScrollAw
 
         root = new FrameLayout(getContext());
         root.setId(CompatUtils.generateViewId());
-        content.addView(titleBar, MATCH_PARENT, UiUtils.getTopBarHeight(getContext()));
+        content.addView(titleBar, MATCH_PARENT, WRAP_CONTENT);
         content.addView(topTabs);
         root.addView(content);
         root.addView(border);
@@ -98,7 +97,7 @@ public class TopBar extends AppBarLayout implements ScrollEventListener.ScrollAw
 
     private View createBorder() {
         View border = new View(getContext());
-        border.setBackgroundColor(Color.TRANSPARENT);
+        border.setBackgroundColor(android.graphics.Color.TRANSPARENT);
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(MATCH_PARENT, 0);
         lp.gravity = Gravity.BOTTOM;
         border.setLayoutParams(lp);
@@ -112,10 +111,9 @@ public class TopBar extends AppBarLayout implements ScrollEventListener.ScrollAw
     }
 
     public void setHeight(int height) {
-        int pixelHeight = UiUtils.dpToPx(getContext(), height);
-        if (pixelHeight == getLayoutParams().height) return;
+        if (height == getLayoutParams().height) return;
         ViewGroup.LayoutParams lp = getLayoutParams();
-        lp.height = pixelHeight;
+        lp.height = (int) UiUtils.dpToPx(getContext(), height);
         setLayoutParams(lp);
     }
 
@@ -313,9 +311,5 @@ public class TopBar extends AppBarLayout implements ScrollEventListener.ScrollAw
 
     public void setBorderColor(int color) {
         border.setBackgroundColor(color);
-    }
-
-    public void setOverflowButtonColor(int color) {
-        titleBar.setOverflowButtonColor(color);
     }
 }

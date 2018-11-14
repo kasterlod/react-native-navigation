@@ -25,16 +25,9 @@ typedef void (^RNNAnimationBlock)(void);
 		animated = NO;
 	}
 	
-	__block UIViewController *poppedVC = nil;
 	[self performAnimationBlock:^{
-		poppedVC = [viewController.navigationController popViewControllerAnimated:animated];
-	} completion:^{
-		if (poppedVC) {
-			completion();
-		} else {
-			[RNNErrorHandler reject:rejection withErrorCode:1012 errorDescription:@"popping component failed"];
-		}
-	}];
+		[viewController.navigationController popViewControllerAnimated:animated];
+	} completion:completion];
 }
 
 - (void)popTo:(UIViewController *)viewController animated:(BOOL)animated completion:(RNNPopCompletionBlock)completion rejection:(RNNTransitionRejectionBlock)rejection; {

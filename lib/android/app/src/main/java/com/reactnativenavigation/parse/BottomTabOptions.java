@@ -78,6 +78,5 @@ public class BottomTabOptions {
         if (!fontSize.hasValue()) fontSize = defaultOptions.fontSize;
         if (!selectedFontSize.hasValue()) selectedFontSize = defaultOptions.selectedFontSize;
         if (fontFamily == null) fontFamily = defaultOptions.fontFamily;
-        if (!testId.hasValue()) testId = defaultOptions.testId;
     }
 }

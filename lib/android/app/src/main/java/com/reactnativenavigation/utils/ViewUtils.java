@@ -85,7 +85,7 @@ public class ViewUtils {
         return false;
     }
 
-    public static int getHeight(View view) {
+    public static int getPreferredHeight(View view) {
         if (view.getLayoutParams() == null) return 0;
         return view.getLayoutParams().height < 0 ? view.getHeight() : view.getLayoutParams().height;
     }

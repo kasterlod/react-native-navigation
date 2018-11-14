@@ -63,7 +63,6 @@ class WelcomeScreen extends Component {
     Navigation.setRoot({
       root: {
         bottomTabs: {
-          id: 'BottomTabs',
           children: [
             {
               stack: {
@@ -79,7 +78,6 @@ class WelcomeScreen extends Component {
                       options: {
                         topBar: {
                           visible: true,
-                          animate: false,
                           title: {
                             text: 'React Native Navigation!'
                           }
@@ -118,26 +116,6 @@ class WelcomeScreen extends Component {
                     text: 'Tab 2',
                     icon: require('../images/two.png'),
                     testID: testIDs.SECOND_TAB_BAR_BUTTON
-                  }
-                }
-              }
-            },
-            {
-              component: {
-                name: 'navigation.playground.TextScreen',
-                passProps: {
-                  text: 'This is tab 3',
-                  myFunction: () => 'Hello from a function!'
-                },
-                options: {
-                  topBar: {
-                    visible: true,
-                    animate: false
-                  },
-                  bottomTab: {
-                    text: 'Tab 3',
-                    icon: require('../images/one.png'),
-                    selectedIcon: require('../images/one.png')
                   }
                 }
               }

@@ -11,17 +11,16 @@
 
 #pragma mark - public
 
-- (void)showOverlayWindow:(RNNOverlayWindow *)overlayWindow {
-	overlayWindow.previousWindow = [UIApplication sharedApplication].keyWindow;
+- (void)showOverlay:(UIViewController *)viewController {
+	UIWindow* overlayWindow = [[RNNOverlayWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	[_overlayWindows addObject:overlayWindow];
-	overlayWindow.rootViewController.view.backgroundColor = [UIColor clearColor];
 	[overlayWindow setWindowLevel:UIWindowLevelNormal];
+	[overlayWindow setRootViewController:viewController];
 	[overlayWindow makeKeyAndVisible];
 }
 
 - (void)dismissOverlay:(UIViewController*)viewController {
-	RNNOverlayWindow* overlayWindow = [self findWindowByRootViewController:viewController];
-	[overlayWindow.previousWindow makeKeyWindow];
+	UIWindow* overlayWindow = [self findWindowByRootViewController:viewController];
 	[self detachOverlayWindow:overlayWindow];
 }
 
@@ -30,11 +29,23 @@
 - (void)detachOverlayWindow:(UIWindow *)overlayWindow {
 	[overlayWindow setHidden:YES];
 	[overlayWindow setRootViewController:nil];
+	[overlayWindow resignKeyWindow];
+	[self assignKeyWindow];
 	[_overlayWindows removeObject:overlayWindow];
 }
 
-- (RNNOverlayWindow *)findWindowByRootViewController:(UIViewController *)viewController {
-	for (RNNOverlayWindow* window in _overlayWindows) {
+- (void)assignKeyWindow {
+	NSArray* windows = [[[UIApplication sharedApplication].windows reverseObjectEnumerator] allObjects];
+	for (UIWindow* window in windows) {
+		if (window.rootViewController) {
+			[window makeKeyAndVisible];
+			return;
+		}
+	}
+}
+
+- (UIWindow *)findWindowByRootViewController:(UIViewController *)viewController {
+	for (UIWindow* window in _overlayWindows) {
 		if ([window.rootViewController isEqual:viewController]) {
 			return window;
 		}
